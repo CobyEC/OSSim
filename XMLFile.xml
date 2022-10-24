@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TemplateData>
+  <Operation Op_type="CALCULATE">
+    <name>CALC</name>
+    <min>10</min>
+    <max>80</max>
+  </Operation>
+
+  <Operation Op_type="I/O">
+    <name>IO</name>
+    <min>5</min>
+    <max>28</max>
+  </Operation>
+
+  <Operation Op_type="CALCULATE">
+    <name>CALC</name>
+    <min>20</min>
+    <max>45</max>
+  </Operation>
+
+  <Operation Op_type="CALCULATE">
+    <name>CALC</name>
+    <min>4</min>
+    <max>90</max>
+  </Operation>
+
+  <Operation Op_type="I/O">
+    <name>IO</name>
+    <min>2</min>
+    <max>15</max>
+  </Operation>
+</TemplateData>
