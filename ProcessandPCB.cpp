@@ -29,9 +29,12 @@ process::process() {
 }
 
 //Process esentially takes the fileXML name, then according to the format, inputs the corresponding operations, and cycles
+//updated to also take the next node as a parameter
 // How OP is defined 1 = Calc, 2 = IO, 3 = Fork
 //Assigning temporaries to compare in XML input
-process::process(ifstream& File) {
+process::process(ifstream& File, process *next = nullptr) {
+
+    this->NEXTProcess = next;
     xml_document<> doc;
     xml_node<>* rtnode = NULL;
     string OPCaltemp = "CALCULATE";
@@ -259,6 +262,14 @@ void PCB::PrintPCB() {
     cout << "|| Memory Size        :" << this->getMem() << " Bytes\n\n";
 }
 
+
+
+
+
+
+
+
+
 //void ContextSwitch(ProcStates,  int, int, int )   This function is the "ContextSwitch" which assigns the PCB status of the process
 void process::ContextSwitch(ProcStates St, int op, int cyc, int mem) {
     //Using the respectful set functions for each PCB member
@@ -302,5 +313,61 @@ void process::Inccyc() {
 void process::IncPCBOp() {
     this->APCB.setOp((this->getPCBOp() + 1));
 }
+
+
+//process getNEXTProc()   This function simply returns the pointer to the next process using this->
+process process::getNEXTProc() {
+    return this->NEXTProcess;
+}
+
+//process setNEXTProc()    This function sets the next node of the process using this->
+void process::setNEXTProc(process *NEXT) {
+    this->NEXTProcess = NEXT;
+}
+
+
+
+
+
+
+
+
+
+//void LinkedProcesses()  Base constructor assugning the head  to nullptr
+void LinkedProcesses::LinkedProcesses() {
+    this->HEAD = nullptr;
+}
+
+//void ~LinkedProcesses()  Base deconstructor, loops and pops until the end of the list
+void LinkedProcesses::~LinkedProcesses() {
+    while (this->HEAD != nullptr) {
+        popProc();
+    }
+}
+
+//void pushProc(ifstream& )  This function uses the input XML ifstream file, and according constructor in the process clas
+void LinkedProcesses::pushProc(ifstream& inFile) {
+    this->HEAD = new process(inFile, this->HEAD);
+}
+
+
+//void popProc()  This function deletes an item if there are items in the list, it then assigns a temp to transfer the head and current next to
+ void LinkedProcesses::popProc() {
+     process* temp;
+     if (this->HEAD == nullptr) {
+         cout << "THE LIST IS EMPTY!/n";
+     }
+     else {
+         temp = this->HEAD;
+         this->HEAD = this->HEAD->getNEXTProc();
+         delete temp;
+     }
+
+}
+
+
+
+
+
 
 
