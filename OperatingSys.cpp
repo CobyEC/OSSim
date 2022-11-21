@@ -31,15 +31,19 @@ int UserInterface(int NumP) {
 
 int main()
 {
+    //List testing object
+    LinkedProcesses list;
 
+    
     
     //Now testing the process class
     ifstream TestFile("XMLFile.xml");
+
     process TestOne = process(TestFile);
-    
     TestOne.PrintProcess();
 
     ifstream TestFile2("XMLFile2.xml");
+
     process TestTwo = process(TestFile2);
     TestTwo.PrintProcess();
 
@@ -48,6 +52,11 @@ int main()
    
     TestOne.~process();
     TestTwo.~process();
+
+
+
+    list.pushProc(TestFile);
+    list.pushProc(TestFile2);
 }
 
 
