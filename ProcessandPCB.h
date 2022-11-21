@@ -60,6 +60,8 @@ private:
 	vector<int> Min;
 	vector<int> Max;
 
+	process* NEXTProcess;
+
 public:
 
 	//Base Constructor
@@ -107,6 +109,31 @@ public:
 
 	//This function Saves the context of the process to the memory
 	void ContextSwitch(ProcStates, int, int, int); 
+
+	//This function get the next process in the list
+	process getNEXTProc();
+
+	//This function simply adds the next process node to the NEXT pointer
+	void setNEXTProc();
+
+
+};
+
+class LinkedProcesses {
+public:
+	process *HEAD
+private:
+	//base constructor for the linkes processes
+	LinkedProcesses();
+
+	//base deconstructor
+	~LinkedProcesses();
+
+	//This function will add a process to the head of the list NOTE:This is required we use the XML input format
+	void pushProc(ifstream&)();
+
+	//This function removes a node from the list
+	void popProc();
 
 
 };
