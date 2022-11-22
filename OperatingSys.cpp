@@ -17,11 +17,11 @@ xml_node<>* rt_node = NULL;
 
 int NumProcesses;
 
-//UserInterface original functionality --load, --RunNumCyc, --Stat, --help, --Templates
+//UserInterface original functionality --load, --RunNumCyc, --Stat, --help, --Templates, --display proc 
 int UserInterface(int NumP) {
     int input;
     cout << "\nWelcome to Coby's first UI and OS simulator..... \n";
-    cout << "Enter command  (Enter help for more info.): ";
+    cout << "Enter command currently  (Enter 5 -(help) for more info.): ";
     cin >> input;
 
     return input;
@@ -34,33 +34,37 @@ int main()
     //List testing object
     LinkedProcesses list;
 
-    
-    
+
+
     //Now testing the process class
     ifstream TestFile("XMLFile.xml");
 
-    process TestOne = process(TestFile);
+    process TestOne(TestFile, nullptr);
     TestOne.PrintProcess();
 
     ifstream TestFile2("XMLFile2.xml");
 
-    process TestTwo = process(TestFile2);
+    process TestTwo(TestFile2, nullptr);
+
+
     TestTwo.PrintProcess();
-
-
     TestOne.PrintProcess();
-   
+
     TestOne.~process();
     TestTwo.~process();
 
-
+    //Reset both the files back to the beginning
+    TestFile.seekg(0, ios::beg);
+    TestFile2.seekg(0, ios::beg);
 
     list.pushProc(TestFile);
+    list.setProcID();
     list.pushProc(TestFile2);
     list.setProcID();
     cout << " The length of the list is: " << list.ListLength() << endl;
-}
 
+    list.PrintList();
+}
 
 
 
