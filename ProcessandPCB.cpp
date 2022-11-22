@@ -262,6 +262,17 @@ void PCB::PrintPCB() {
     cout << "|| Memory Size        :" << this->getMem() << " Bytes\n\n";
 }
 
+//void setID(int id), this function sets the PCB ID according to the input id
+void PCB::setID(float id) {
+    this->ProcessID = id;
+}
+
+//float getID(), this function returns the Process's unique ID in the PCB
+float PCB::getID() {
+    return this->ProcessID;
+}
+
+
 
 
 
@@ -325,6 +336,39 @@ void process::setNEXTProc(process *NEXT) {
     this->NEXTProcess = NEXT;
 }
 
+//void setPCBID(float id) this function takes in the id and further uses the setID function in the PCB class
+void process::setPCBID(float id) {
+    this->APCB.setID(id);
+}
+
+//float getPCBID()   this function returns the id by using the PCB's function of it's class
+float process::getPCBID() {
+    return this->APCB.getID();
+}
+
+//void CurrStatePrint()   this function gets the current state from the PCB, and then prints the corresponding text
+void process::CurrStatePrint() {
+    ProcStates temp = this->getPCBState();
+    if (temp == New) {
+        cout << "New";
+    }
+    else if (temp == Ready) {
+        cout << "Ready";
+    }
+    else if (temp == Run) {
+        cout << "Run";
+    }
+    else if (temp == Wait) {
+        cout << "Wait";
+    }
+    else if (temp == Exit) {
+        cout << "Exit";
+    }
+    else {
+        cout << "Mmmmm... Doesn't have a state.";
+    }
+}
+
 
 
 
@@ -334,12 +378,12 @@ void process::setNEXTProc(process *NEXT) {
 
 
 //void LinkedProcesses()  Base constructor assugning the head  to nullptr
-void LinkedProcesses::LinkedProcesses() {
+ LinkedProcesses::LinkedProcesses() {
     this->HEAD = nullptr;
 }
 
 //void ~LinkedProcesses()  Base deconstructor, loops and pops until the end of the list
-void LinkedProcesses::~LinkedProcesses() {
+ LinkedProcesses::~LinkedProcesses() {
     while (this->HEAD != nullptr) {
         popProc();
     }
@@ -364,6 +408,79 @@ void LinkedProcesses::pushProc(ifstream& inFile) {
      }
 
 }
+
+ //int ListLength()   This function iterates through the list and then returns the length through the iterator
+ int LinkedProcesses::ListLength() {
+     int tempLen = 0;
+     for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
+         tempLen++;
+     }
+     return tempLen;
+ }
+
+ //void setProcID()   This function sets the Process's ID in the PCB block, first checking if there is a value, then 
+ void LinkedProcesses::setProcID() {
+
+     //My temporaries to assign the random ID, as well as the low and high for the number
+     float randtemp1; 
+     float low = 5.0;
+     float high = 10000.0;
+
+     //Temp for the while loop
+     bool IDExists;
+
+     
+     //Checking if ID exists
+     if (this->HEAD->getPCBID() != 0.0) {
+         cout << "\nERROR: while trying to set the new process's ID... ID already found!!!\n";
+         return;
+     }
+     else {
+         //loop until ID is proven to be unique
+         do {
+             randtemp1 = (low + (rand() % (high - low))); //random is set with the low as addition and modulo on the high
+             IDExists = false;
+
+             //this loop iterates and checks if any ID exists
+             for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
+                 if (currPr->getPCBID() == randtemp1) {
+                     cout << "PCBID :: " << currPr->getPCBID(); << endl;
+                     IDExists = true;
+                 }
+             }
+         } while (IDExists);
+
+         //Now that the ID is unique I can assign it to the process
+         this->HEAD->setPCBID(randtemp1);
+         cout << "ID created for process : " << randtemp1 << endl;
+     }
+ }
+
+
+ //void FindProc(float id)   this function find the process with the specific id if it exists, I iterate similiar to the assignment of the id
+ void LinkedProcesses::FindProc(float id) {
+
+     bool IDFound = false;
+     for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
+         //If found, I print the Process ID, the PCB information, and the Process itself
+         if (currPr->getPCBID() == id) {
+             cout << "PCBID :: " << currPr->getPCBID(); << "Found! \n";
+             //set boolean value to true to I won't print the not found info at the end
+             IDFound = true;
+             cout << "Process Information:\n";
+             cout << "-----------------------------------------------------------\n";
+             cout << "ID: " << currPr->getPCBID() << "        ";
+             currPr->APCB.PrintPCB();
+             currPr->PrintProcess();
+             cout << "-----------------------------------------------------------\n";
+             break;
+         }
+     }
+
+     if (!IDFound) {
+         cout << "ERROR in finding the process, could not locate the id: " << id << endl;
+     }
+ }
 
 
 
