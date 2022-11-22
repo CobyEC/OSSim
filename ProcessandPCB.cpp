@@ -17,13 +17,14 @@ using namespace rapidxml;
 process::process() {
 
     //Creating buffers and loading one calculate operation with min of 0 and max of 2
-    
+
 
     //Now calling each member and saving the converted string 
     this->OP.push_back(1);
     this->Min.push_back(0);
     this->RunCyc.push_back(1);
     this->Max.push_back(2);
+    this->NEXTProcess = nullptr;
 
 
 }
@@ -32,7 +33,7 @@ process::process() {
 //updated to also take the next node as a parameter
 // How OP is defined 1 = Calc, 2 = IO, 3 = Fork
 //Assigning temporaries to compare in XML input
-process::process(ifstream& File, process *next = nullptr) {
+process::process(ifstream& File, process* next = nullptr) {
 
     this->NEXTProcess = next;
     xml_document<> doc;
@@ -40,7 +41,7 @@ process::process(ifstream& File, process *next = nullptr) {
     string OPCaltemp = "CALCULATE";
 
     string OPIOtemp = "I/O";
-    
+
     string OPFORKtemp = "FORK";
     //Temp for my input 
     string Tstring;
@@ -60,7 +61,7 @@ process::process(ifstream& File, process *next = nullptr) {
     {
         //cout << "In the class loop\n OP type: " << op_nodes->first_attribute("Op_type")->value() << endl;
         //Place the Operation data inside the node using this refrence to the vector
-       
+
      //   cout << OPCaltemp << "..." << endl;
      //   cout << op_nodes->first_attribute("Op_type")->value() << "..." << endl;
         Tstring = op_nodes->first_attribute("Op_type")->value();
@@ -68,7 +69,7 @@ process::process(ifstream& File, process *next = nullptr) {
 
             this->OP.push_back(1);
         }
-        else if (Tstring == OPIOtemp){
+        else if (Tstring == OPIOtemp) {
             this->OP.push_back(2);
         }
         else if (Tstring == OPIOtemp) {
@@ -78,17 +79,17 @@ process::process(ifstream& File, process *next = nullptr) {
             cout << "Warning Template Type: " << op_nodes->first_attribute("Op_type")->value() << "  NOT READABLE (Please use CALCULATE, I/O, and FORK)\n";
             this->OP.push_back(0);
         }
-     //   coub t << "VECTOR:  " << this->OP[0] << endl;
-        
-        //Iterate through the min and max of the node print out data for demo
+        //   coub t << "VECTOR:  " << this->OP[0] << endl;
+
+           //Iterate through the min and max of the node print out data for demo
         for (xml_node<>* op_mincyc = op_nodes->first_node("min"); op_mincyc; op_mincyc = op_mincyc->next_sibling())
         {
             this->Min.push_back(atoi(op_mincyc->value()));
             op_mincyc = op_mincyc->next_sibling();
             this->Max.push_back(atoi(op_mincyc->value()));
-            
+
         }
-        
+
     }
     //cout << "\n  " << this->OP.size() << endl;
     //Now looping and assigning each operation a random number of cycles
@@ -97,10 +98,10 @@ process::process(ifstream& File, process *next = nullptr) {
         //Using the RandNum function to assign the operation withe the corresponding randon number between Min and Max 
         this->RunCyc.push_back(RandNum(this->Min[i], this->Max[i]));
     }
-    
-    //Finding the size of the process PrMemSize(), then creating the Control Block PCB()
-    this->APCB = PCB(this->PrMemSize());
-    
+
+    //Finding the size of the process getMemSize(), then creating the Control Block PCB()
+    this->APCB = PCB(this->getMemSize());
+
 }
 
 //~process is the deconstructor for the class
@@ -121,7 +122,7 @@ void process::PrintProcess() {
     this->APCB.PrintPCB();
     cout << "\n----------------------    File Contents:    ----------------------\n";
     cout << "OpType        Min          Max        Assigned\n";
-    
+
     //Looping until I reach the end of the process
     while (i < this->OP.size()) {
         PrintOp(this->OP[i]);
@@ -140,7 +141,7 @@ void process::PrintProcess() {
 int process::RandNum(int l, int h) {
     int Cycles;
     //cout << " LOW: " << l << "   HIGH: " << h << "  RAND: " << rand() << endl;
-    Cycles = (l + (rand() % (h-l))); //random is set with the low as addition and modulo on the high
+    Cycles = (l + (rand() % (h - l))); //random is set with the low as addition and modulo on the high
     return Cycles;
 }
 
@@ -164,12 +165,12 @@ void process::PrintOp(int Op) {
     }
 }
 
-//int PrMemSize()   FFunction gets Memory by multiplying the length of the operation vector by the int corresponding designation
-int process::PrMemSize() {
+//int getMemSize()   FFunction gets Memory by multiplying the length of the operation vector by the int corresponding designation
+int process::getMemSize() {
     //cout << "MEMSIZE: " << this->OP.size() << endl;
     //cout << "INT size: " << sizeof(int) << endl;;
     int Stemp = this->OP.size() * sizeof(int);
-    
+
     return Stemp;
 }
 
@@ -327,12 +328,12 @@ void process::IncPCBOp() {
 
 
 //process getNEXTProc()   This function simply returns the pointer to the next process using this->
-process process::getNEXTProc() {
+process* process::getNEXTProc() {
     return this->NEXTProcess;
 }
 
 //process setNEXTProc()    This function sets the next node of the process using this->
-void process::setNEXTProc(process *NEXT) {
+void process::setNEXTProc(process* NEXT) {
     this->NEXTProcess = NEXT;
 }
 
@@ -369,6 +370,11 @@ void process::CurrStatePrint() {
     }
 }
 
+//void PrintProcPCB()   this function uses the processes PCB function declared in the PCB class
+void process::PrintProcPCB() {
+    this->APCB.PrintPCB();
+}
+
 
 
 
@@ -378,12 +384,12 @@ void process::CurrStatePrint() {
 
 
 //void LinkedProcesses()  Base constructor assugning the head  to nullptr
- LinkedProcesses::LinkedProcesses() {
+LinkedProcesses::LinkedProcesses() {
     this->HEAD = nullptr;
 }
 
 //void ~LinkedProcesses()  Base deconstructor, loops and pops until the end of the list
- LinkedProcesses::~LinkedProcesses() {
+LinkedProcesses::~LinkedProcesses() {
     while (this->HEAD != nullptr) {
         popProc();
     }
@@ -396,92 +402,116 @@ void LinkedProcesses::pushProc(ifstream& inFile) {
 
 
 //void popProc()  This function deletes an item if there are items in the list, it then assigns a temp to transfer the head and current next to
- void LinkedProcesses::popProc() {
-     process* temp;
-     if (this->HEAD == nullptr) {
-         cout << "THE LIST IS EMPTY!/n";
-     }
-     else {
-         temp = this->HEAD;
-         this->HEAD = this->HEAD->getNEXTProc();
-         delete temp;
-     }
+void LinkedProcesses::popProc() {
+    process* temp;
+    if (this->HEAD == nullptr) {
+        cout << "THE LIST IS EMPTY!/n";
+    }
+    else {
+        temp = this->HEAD;
+        this->HEAD = this->HEAD->getNEXTProc();
+        delete temp;
+    }
 
 }
 
- //int ListLength()   This function iterates through the list and then returns the length through the iterator
- int LinkedProcesses::ListLength() {
-     int tempLen = 0;
-     for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
-         tempLen++;
-     }
-     return tempLen;
- }
+//int ListLength()   This function iterates through the list and then returns the length through the iterator
+int LinkedProcesses::ListLength() {
+    int tempLen = 0;
+    for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
+        tempLen++;
+    }
+    return tempLen;
+}
 
- //void setProcID()   This function sets the Process's ID in the PCB block, first checking if there is a value, then 
- void LinkedProcesses::setProcID() {
+//void setProcID()   This function sets the Process's ID in the PCB block, first checking if there is a value, then 
+void LinkedProcesses::setProcID() {
 
-     //My temporaries to assign the random ID, as well as the low and high for the number
-     float randtemp1; 
-     float low = 5.0;
-     float high = 10000.0;
+    //My temporaries to assign the random ID, as well as the low and high for the number
+    float randtemp1;
+    float low = 5.0;
+    float high = 10000.0;
 
-     //Temp for the while loop
-     bool IDExists;
-
-     
-     //Checking if ID exists
-     if (this->HEAD->getPCBID() != 0.0) {
-         cout << "\nERROR: while trying to set the new process's ID... ID already found!!!\n";
-         return;
-     }
-     else {
-         //loop until ID is proven to be unique
-         do {
-             randtemp1 = (low + (rand() % (high - low))); //random is set with the low as addition and modulo on the high
-             IDExists = false;
-
-             //this loop iterates and checks if any ID exists
-             for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
-                 if (currPr->getPCBID() == randtemp1) {
-                     cout << "PCBID :: " << currPr->getPCBID(); << endl;
-                     IDExists = true;
-                 }
-             }
-         } while (IDExists);
-
-         //Now that the ID is unique I can assign it to the process
-         this->HEAD->setPCBID(randtemp1);
-         cout << "ID created for process : " << randtemp1 << endl;
-     }
- }
+    //Temp for the while loop
+    bool IDExists;
 
 
- //void FindProc(float id)   this function find the process with the specific id if it exists, I iterate similiar to the assignment of the id
- void LinkedProcesses::FindProc(float id) {
+    //Checking if ID exists
+    if (this->HEAD->getPCBID() != 0.0) {
+        cout << "\nERROR: while trying to set the new process's ID... ID already found!!!\n";
+        return;
+    }
+    else {
+        //loop until ID is proven to be unique
+        do {
+            randtemp1 = (low + ((float(rand()) / high) * (high - low))); //random is set a simple manipulation of my previous randum number generation
+            IDExists = false;
 
-     bool IDFound = false;
-     for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
-         //If found, I print the Process ID, the PCB information, and the Process itself
-         if (currPr->getPCBID() == id) {
-             cout << "PCBID :: " << currPr->getPCBID(); << "Found! \n";
-             //set boolean value to true to I won't print the not found info at the end
-             IDFound = true;
-             cout << "Process Information:\n";
-             cout << "-----------------------------------------------------------\n";
-             cout << "ID: " << currPr->getPCBID() << "        ";
-             currPr->APCB.PrintPCB();
-             currPr->PrintProcess();
-             cout << "-----------------------------------------------------------\n";
-             break;
-         }
-     }
+            //this loop iterates and checks if any ID exists
+            for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
+                if (currPr->getPCBID() == randtemp1) {
+                    cout << "PCBID :: " << currPr->getPCBID() << endl;
+                    IDExists = true;
+                }
+            }
+        } while (IDExists);
 
-     if (!IDFound) {
-         cout << "ERROR in finding the process, could not locate the id: " << id << endl;
-     }
- }
+        //Now that the ID is unique I can assign it to the process
+        this->HEAD->setPCBID(randtemp1);
+        cout << "ID created for process : " << randtemp1 << endl;
+    }
+}
 
+
+//void FindProc(float id)   this function find the process with the specific id if it exists, I iterate similiar to the assignment of the id
+void LinkedProcesses::FindProc(float id) {
+
+    bool IDFound = false;
+    for (process *currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
+        //If found, I print the Process ID, the PCB information, and the Process itself
+        if (currPr->getPCBID() == id) {
+            cout << "PCBID :: " << currPr->getPCBID() << "Found! \n";
+            //set boolean value to true to I won't print the not found info at the end
+            IDFound = true;
+            cout << "Process Information:\n";
+            cout << "-----------------------------------------------------------\n";
+            cout << "ID: " << currPr->getPCBID() << "        ";
+            currPr->PrintProcPCB();
+            currPr->PrintProcess();
+            cout << "-----------------------------------------------------------\n";
+            break;
+        }
+    }
+
+    if (!IDFound) {
+        cout << "ERROR in finding the process, could not locate the id: " << id << endl;
+    }
+}
+
+//void PrintList()   this function loops and prints all the processes critical information (ID/ State/ CycIn / Memsize)
+void LinkedProcesses::PrintList() {
+    int CurrentProcessNum = 1;
+    if (this->ListLength() == 1) {
+        cout << "\n-----------------PROCESS'S CONTAINED-----------------\n";
+        cout << "Process " << CurrentProcessNum << endl;
+        cout << "ID: " << this->HEAD->getPCBID() << "||  State: ";
+        this->HEAD->CurrStatePrint();
+        cout << "||  Cycles in state: " << this->HEAD->getPCBCyclesIn() << "||  Memory Size: " << this->HEAD->getMemSize() << endl;
+        cout << "\n------------------------------------------------------\n";
+    }
+    else {
+        cout << "\n-----------------PROCESS'S CONTAINED-----------------\n";
+        for (process* currPr = this->HEAD; currPr != nullptr; currPr = currPr->getNEXTProc()) {
+            cout << "Process " << CurrentProcessNum << endl;
+            cout << "ID: " << currPr->getPCBID() << "||  State: ";
+            this->HEAD->CurrStatePrint();
+            cout << "||  Cycles in state: " << currPr->getPCBCyclesIn() << "||  Memory Size: " << currPr->getMemSize() << endl;
+            CurrentProcessNum++;
+        }
+        cout << "\n------------------------------------------------------\n";
+
+    }
+}
 
 
 
