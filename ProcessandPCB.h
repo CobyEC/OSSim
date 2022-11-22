@@ -7,6 +7,8 @@
 #ifndef PCB_H
 #define PCB_H
 
+#include <fstream>
+#include <vector>
 using namespace std;
 
 
@@ -45,7 +47,7 @@ public:
 	void IncCyc();               //Function to increase the Cycle count
 
 	void setMem(int);           //Function to set the Memory size
-	
+
 	void setID(float);          //Function to set the PCB ID
 
 	float getID();              //Function to get the PCB ID
@@ -58,14 +60,14 @@ class process {
 
 private:
 	//Tactic: 1 = Calc, 2 = IO, 3 = Fork
-	
+
 	PCB APCB;    //My PCB object for the process
 	vector<int> OP;     //Vector of operations to perform
 	vector<int> RunCyc;  //the actual cycles assigned to run
 	vector<int> Min;      //The Minimum cycles needed for the process
 	vector<int> Max;      //The Maximum cycles needed for the process
 
-	process* NEXTProcess;
+	process *NEXTProcess;
 
 public:
 
@@ -74,7 +76,7 @@ public:
 
 
 	//Constructor to setup based on a template
-	process(ifstream&);
+	process(ifstream&, process *);
 
 	//Base Deconstructor
 	~process();
@@ -107,19 +109,19 @@ public:
 	void PrintOp(int Op);
 
 	//This function gets the memory size of the Process in it's operation vector 
-	int PrMemSize();
+	int getMemSize();
 
 	//This function increases the PCB size 
 	void Inccyc();
 
 	//This function Saves the context of the process to the memory
-	void ContextSwitch(ProcStates, int, int, int); 
+	void ContextSwitch(ProcStates, int, int, int);
 
 	//This function get the next process in the list
-	process getNEXTProc();
+	process *getNEXTProc();
 
 	//This function simply adds the next process node to the NEXT pointer
-	void setNEXTProc(process *);
+	void setNEXTProc(process*);
 
 	//This function sets the PCB ID
 	void setPCBID(float);
@@ -130,13 +132,16 @@ public:
 	//This function translates the state variable into text
 	void CurrStatePrint();
 
+	//This function prints the PCB using it's class function
+	void PrintProcPCB();
+
 
 };
 
 class LinkedProcesses {
-public:
-	process *HEAD
 private:
+	process* HEAD;
+public:
 	//base constructor for the linkes processes
 	LinkedProcesses();
 
@@ -144,7 +149,7 @@ private:
 	~LinkedProcesses();
 
 	//This function will add a process to the head of the list NOTE:This is required we use the XML input format
-	void pushProc(ifstream&)();
+	void pushProc(ifstream &);
 
 	//This function removes a node from the list
 	void popProc();
@@ -157,6 +162,9 @@ private:
 
 	//This function returns the process from it's ID if it exists
 	void FindProc(float);
+
+	//This function Prints all the processes and their respective information (ID/ State/ CycIn/ MemSize)
+	void PrintList();
 
 };
 #endif
