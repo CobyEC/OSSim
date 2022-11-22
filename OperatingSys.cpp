@@ -57,6 +57,8 @@ int main()
 
     list.pushProc(TestFile);
     list.pushProc(TestFile2);
+    list.setProcID();
+    cout << " The length of the list is: " << list.ListLength() << endl;
 }
 
 
