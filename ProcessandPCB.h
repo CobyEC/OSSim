@@ -15,6 +15,7 @@ enum ProcStates { New, Ready, Run, Wait, Exit };
 class PCB
 {
 private:
+	float ProcessID = 0.0;   //This is my process ID, uniqe to each process
 	ProcStates state; // This is my state variable for the process
 	int Op;           //This keeps track of the operation in the vector we're in
 	int cyclesIn;          //This keeps track of the number of cycles into the process Op, this will be reset upon an operation switch
@@ -44,6 +45,10 @@ public:
 	void IncCyc();               //Function to increase the Cycle count
 
 	void setMem(int);           //Function to set the Memory size
+	
+	void setID(float);          //Function to set the PCB ID
+
+	float getID();              //Function to get the PCB ID
 
 	void PrintPCB();            //Function to Print the PCB
 };
@@ -53,12 +58,12 @@ class process {
 
 private:
 	//Tactic: 1 = Calc, 2 = IO, 3 = Fork
-
-	PCB APCB;
-	vector<int> OP;
-	vector<int> RunCyc;
-	vector<int> Min;
-	vector<int> Max;
+	
+	PCB APCB;    //My PCB object for the process
+	vector<int> OP;     //Vector of operations to perform
+	vector<int> RunCyc;  //the actual cycles assigned to run
+	vector<int> Min;      //The Minimum cycles needed for the process
+	vector<int> Max;      //The Maximum cycles needed for the process
 
 	process* NEXTProcess;
 
@@ -114,7 +119,16 @@ public:
 	process getNEXTProc();
 
 	//This function simply adds the next process node to the NEXT pointer
-	void setNEXTProc();
+	void setNEXTProc(process *);
+
+	//This function sets the PCB ID
+	void setPCBID(float);
+
+	//This function gets the PCB ID
+	float getPCBID();
+
+	//This function translates the state variable into text
+	void CurrStatePrint();
 
 
 };
@@ -135,6 +149,14 @@ private:
 	//This function removes a node from the list
 	void popProc();
 
+	//This function returns the number of processes in the list
+	int ListLength();
+
+	//This function assigns a process a unique ID, but checking if ID is already asigned
+	void setProcID();
+
+	//This function returns the process from it's ID if it exists
+	void FindProc(float);
 
 };
 #endif
