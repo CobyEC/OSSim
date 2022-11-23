@@ -296,6 +296,11 @@ ProcStates process::getPCBState() {
     return this->APCB.getState();
 }
 
+//void setPCBState()   This function sets the state given the ProcStates type input
+void process::setPCBState(ProcStates PSt) {
+    this->APCB.setState(PSt);
+}
+
 //int getPCBOp()   This function returns the process's respectful operation number is in on
 int process::getPCBOp() {
     return this->APCB.getOp();
@@ -458,6 +463,8 @@ void LinkedProcesses::setProcID() {
 
         //Now that the ID is unique I can assign it to the process
         this->HEAD->setPCBID(randtemp1);
+        //I assign the process to the ready state once it's creating and ID has now been complete
+        this->HEAD->setPCBState(Ready);
         cout << "ID created for process : " << randtemp1 << endl;
     }
 }
