@@ -93,6 +93,9 @@ public:
 	//This function returns the PCB State
 	ProcStates getPCBState();
 
+	//This function sets the PCB State
+	void setPCBState(ProcStates);
+
 	//This function returns the PCB Operation number it is on
 	int getPCBOp();
 
@@ -157,7 +160,7 @@ public:
 	//This function returns the number of processes in the list
 	int ListLength();
 
-	//This function assigns a process a unique ID, but checking if ID is already asigned
+	//This function assigns a process a unique ID, but checking if ID is already asigned, once a process is assigned an ID it transitions from the New into the ready state
 	void setProcID();
 
 	//This function returns the process from it's ID if it exists
